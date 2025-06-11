@@ -18,7 +18,7 @@ class Car {
         this.acceleration = 40; // km/h per second
         this.braking = 80; // km/h per second
         this.deceleration = 20; // km/h per second (when not accelerating)
-        this.turnSpeed = 2.5; // radians per second
+        this.turnSpeed = 4.0; // radians per second (increased for tighter turning)
         
         // Current state
         this.speed = 0; // km/h
@@ -64,78 +64,116 @@ class Car {
     _createCarModel() {
         // Create a simple car mesh (can be replaced with a loaded model later)
         const carGroup = new THREE.Group();
-        
-        // Car body
-        const bodyGeometry = new THREE.BoxGeometry(this.carWidth, this.carHeight, this.carLength);
-        const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0xff6b00 });
+
+        // Main body (low and long)
+        const bodyGeometry = new THREE.BoxGeometry(this.carWidth * 1.1, this.carHeight * 0.4, this.carLength * 0.9);
+        const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x151c3a }); // dark blue
         const carBody = new THREE.Mesh(bodyGeometry, bodyMaterial);
         carBody.position.y = 0.5;
         carGroup.add(carBody);
-        
-        // Car roof
-        const roofGeometry = new THREE.BoxGeometry(this.carWidth * 0.8, this.carHeight * 0.4, this.carLength * 0.6);
-        const roofMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 });
-        const roof = new THREE.Mesh(roofGeometry, roofMaterial);
-        roof.position.y = this.carHeight * 0.7;
-        roof.position.z = -this.carLength * 0.1;
-        carGroup.add(roof);
-        
-        // Wheels
-        const wheelGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
-        wheelGeometry.rotateX(Math.PI / 2);
-        const wheelMaterial = new THREE.MeshPhongMaterial({ color: 0x111111 });
-        
+
+        // Cockpit
+        const cockpitGeometry = new THREE.CylinderGeometry(0.35, 0.35, 1.2, 16);
+        const cockpitMaterial = new THREE.MeshPhongMaterial({ color: 0xffd700 }); // yellow
+        const cockpit = new THREE.Mesh(cockpitGeometry, cockpitMaterial);
+        cockpit.rotation.z = Math.PI / 2;
+        cockpit.position.set(0, 0.8, 0.2);
+        carGroup.add(cockpit);
+
+        // Nose cone
+        const noseGeometry = new THREE.CylinderGeometry(0.18, 0.3, 1.2, 16);
+        const noseMaterial = new THREE.MeshPhongMaterial({ color: 0xffd700 }); // yellow
+        const nose = new THREE.Mesh(noseGeometry, noseMaterial);
+        nose.rotation.z = Math.PI / 2;
+        nose.position.set(0, 0.45, this.carLength * 0.45);
+        carGroup.add(nose);
+
+        // Front wing
+        const frontWingGeometry = new THREE.BoxGeometry(this.carWidth * 1.5, 0.08, 0.5);
+        const frontWingMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 }); // red
+        const frontWing = new THREE.Mesh(frontWingGeometry, frontWingMaterial);
+        frontWing.position.set(0, 0.32, this.carLength * 0.55);
+        carGroup.add(frontWing);
+
+        // Rear wing
+        const rearWingGeometry = new THREE.BoxGeometry(this.carWidth * 1.2, 0.08, 0.4);
+        const rearWingMaterial = new THREE.MeshPhongMaterial({ color: 0x151c3a }); // dark blue
+        const rearWing = new THREE.Mesh(rearWingGeometry, rearWingMaterial);
+        rearWing.position.set(0, 0.7, -this.carLength * 0.48);
+        carGroup.add(rearWing);
+        // Rear wing endplates
+        const endplateGeometry = new THREE.BoxGeometry(0.08, 0.3, 0.4);
+        const endplateMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+        const endplateL = new THREE.Mesh(endplateGeometry, endplateMaterial);
+        endplateL.position.set(this.carWidth * 0.6, 0.85, -this.carLength * 0.48);
+        carGroup.add(endplateL);
+        const endplateR = new THREE.Mesh(endplateGeometry, endplateMaterial);
+        endplateR.position.set(-this.carWidth * 0.6, 0.85, -this.carLength * 0.48);
+        carGroup.add(endplateR);
+
+        // Sidepods
+        const podGeometry = new THREE.BoxGeometry(0.18, 0.25, 1.2);
+        const podMaterial = new THREE.MeshPhongMaterial({ color: 0x151c3a });
+        const podL = new THREE.Mesh(podGeometry, podMaterial);
+        podL.position.set(this.carWidth * 0.65, 0.45, 0);
+        carGroup.add(podL);
+        const podR = new THREE.Mesh(podGeometry, podMaterial);
+        podR.position.set(-this.carWidth * 0.65, 0.45, 0);
+        carGroup.add(podR);
+
+        // Engine cover (shark fin)
+        const finGeometry = new THREE.BoxGeometry(0.08, 0.5, 1.2);
+        const finMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+        const fin = new THREE.Mesh(finGeometry, finMaterial);
+        fin.position.set(0, 1.0, -0.3);
+        carGroup.add(fin);
+
+        // Wheels (large, F1 style)
+        const wheelGeometry = new THREE.CylinderGeometry(0.45, 0.45, 0.35, 24);
+        wheelGeometry.rotateZ(Math.PI / 2);
+        const wheelMaterial = new THREE.MeshPhongMaterial({ color: 0x222222 });
+        const tireMaterial = new THREE.MeshPhongMaterial({ color: 0xffd700 }); // yellow ring
         // Front left wheel
         const wheelFL = new THREE.Mesh(wheelGeometry, wheelMaterial);
-        wheelFL.position.set(this.carWidth/2 + 0.1, 0.4, this.carLength/2 - 0.7);
+        wheelFL.position.set(this.carWidth/2 + 0.25, 0.35, this.carLength/2 - 0.3);
         carGroup.add(wheelFL);
         this.wheelMeshes.push(wheelFL);
-        
         // Front right wheel
         const wheelFR = new THREE.Mesh(wheelGeometry, wheelMaterial);
-        wheelFR.position.set(-this.carWidth/2 - 0.1, 0.4, this.carLength/2 - 0.7);
+        wheelFR.position.set(-this.carWidth/2 - 0.25, 0.35, this.carLength/2 - 0.3);
         carGroup.add(wheelFR);
         this.wheelMeshes.push(wheelFR);
-        
         // Rear left wheel
         const wheelRL = new THREE.Mesh(wheelGeometry, wheelMaterial);
-        wheelRL.position.set(this.carWidth/2 + 0.1, 0.4, -this.carLength/2 + 0.7);
+        wheelRL.position.set(this.carWidth/2 + 0.25, 0.35, -this.carLength/2 + 0.3);
         carGroup.add(wheelRL);
         this.wheelMeshes.push(wheelRL);
-        
         // Rear right wheel
         const wheelRR = new THREE.Mesh(wheelGeometry, wheelMaterial);
-        wheelRR.position.set(-this.carWidth/2 - 0.1, 0.4, -this.carLength/2 + 0.7);
+        wheelRR.position.set(-this.carWidth/2 - 0.25, 0.35, -this.carLength/2 + 0.3);
         carGroup.add(wheelRR);
         this.wheelMeshes.push(wheelRR);
-        
-        // Headlights
-        const headlightGeometry = new THREE.SphereGeometry(0.2, 16, 16);
-        const headlightMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff, emissive: 0xffffcc });
-        
-        // Left headlight
-        const headlightL = new THREE.Mesh(headlightGeometry, headlightMaterial);
-        headlightL.position.set(this.carWidth/2 - 0.3, 0.5, this.carLength/2 + 0.1);
-        carGroup.add(headlightL);
-        
-        // Right headlight
-        const headlightR = new THREE.Mesh(headlightGeometry, headlightMaterial);
-        headlightR.position.set(-this.carWidth/2 + 0.3, 0.5, this.carLength/2 + 0.1);
-        carGroup.add(headlightR);
-        
-        // Add headlight spotlights for effect
-        const spotlightL = new THREE.SpotLight(0xffffcc, 0.5, 30, Math.PI / 4, 0.5);
-        spotlightL.position.copy(headlightL.position);
-        spotlightL.target.position.set(headlightL.position.x, 0, headlightL.position.z + 10);
-        carGroup.add(spotlightL);
-        carGroup.add(spotlightL.target);
-        
-        const spotlightR = new THREE.SpotLight(0xffffcc, 0.5, 30, Math.PI / 4, 0.5);
-        spotlightR.position.copy(headlightR.position);
-        spotlightR.target.position.set(headlightR.position.x, 0, headlightR.position.z + 10);
-        carGroup.add(spotlightR);
-        carGroup.add(spotlightR.target);
-        
+        // Add yellow ring to wheels (simple visual effect)
+        for (let wheel of this.wheelMeshes) {
+            const ringGeometry = new THREE.TorusGeometry(0.45, 0.04, 8, 24);
+            const ring = new THREE.Mesh(ringGeometry, tireMaterial);
+            ring.rotation.x = Math.PI / 2;
+            wheel.add(ring);
+        }
+
+        // Red Bull logo (stylized, yellow box)
+        const logoGeometry = new THREE.BoxGeometry(0.5, 0.15, 0.02);
+        const logoMaterial = new THREE.MeshPhongMaterial({ color: 0xffd700 });
+        const logo = new THREE.Mesh(logoGeometry, logoMaterial);
+        logo.position.set(0, 0.7, 0.7);
+        carGroup.add(logo);
+        // Oracle logo (stylized, white box)
+        const oracleGeometry = new THREE.BoxGeometry(0.7, 0.12, 0.02);
+        const oracleMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+        const oracle = new THREE.Mesh(oracleGeometry, oracleMaterial);
+        oracle.position.set(0, 0.62, 0.1);
+        carGroup.add(oracle);
+
         // Set position and rotation
         carGroup.position.copy(this.position);
         carGroup.rotation.copy(this.rotation);
@@ -215,14 +253,23 @@ class Car {
         const dt = deltaTime / 1000;
         
         // Handle steering
+        let currentSteeringAngle = 0;
         if (this.controls.left) {
             this.steeringAngle = this.turnSpeed * (this.speed / this.maxSpeed) * dt;
             this.rotation.y += this.steeringAngle;
-        }
-        
-        if (this.controls.right) {
+            currentSteeringAngle = Math.PI / 6; // 30 degrees wheel turn
+        } else if (this.controls.right) {
             this.steeringAngle = -this.turnSpeed * (this.speed / this.maxSpeed) * dt;
             this.rotation.y += this.steeringAngle;
+            currentSteeringAngle = -Math.PI / 6; // -30 degrees wheel turn
+        } else {
+            currentSteeringAngle = 0; // Wheels straight
+        }
+        
+        // Apply steering angle to front wheels (first two wheels in the wheelMeshes array)
+        if (this.wheelMeshes.length >= 2) {
+            this.wheelMeshes[0].rotation.y = currentSteeringAngle;
+            this.wheelMeshes[1].rotation.y = currentSteeringAngle;
         }
         
         // Update direction vector based on car's rotation
@@ -263,8 +310,30 @@ class Car {
             }
         }
         
+        // --- DRIFTING FUNCTIONALITY ---
+        // Calculate drift factor based on speed and steering
+        let driftFactor = 0;
+        if (Math.abs(currentSteeringAngle) > 0.01 && Math.abs(this.speed) > 30) {
+            // More drift at higher speed and higher steering angle
+            driftFactor = Math.min(1, (Math.abs(this.speed) / this.maxSpeed) * (Math.abs(currentSteeringAngle) / (Math.PI / 6)) * 1.2);
+        }
+        // Calculate forward and lateral (sideways) directions
+        const forward = new THREE.Vector3(Math.sin(this.rotation.y), 0, Math.cos(this.rotation.y));
+        const right = new THREE.Vector3(Math.cos(this.rotation.y), 0, -Math.sin(this.rotation.y));
+        // Calculate lateral velocity for drift
+        let lateralVelocity = 0;
+        if (driftFactor > 0) {
+            lateralVelocity = driftFactor * this.speed * 0.25; // 0.25 is drift strength
+            // Add a little randomness for fun
+            lateralVelocity += (Math.random() - 0.5) * driftFactor * 0.5;
+        }
+        
         // Calculate velocity vector from direction and speed
         this.velocity.copy(this.direction).multiplyScalar(this.speed);
+        // Add drift (sideways) component
+        if (driftFactor > 0) {
+            this.velocity.add(right.clone().multiplyScalar(lateralVelocity));
+        }
         
         // Update position
         const movement = this.velocity.clone().multiplyScalar(dt);
@@ -275,10 +344,24 @@ class Car {
         this.mesh.rotation.copy(this.rotation);
         
         // Update wheel rotation based on speed
-        const wheelRotationSpeed = this.speed / 0.4; // Based on wheel radius
-        this.wheelMeshes.forEach(wheel => {
-            wheel.rotation.x += wheelRotationSpeed * dt;
-        });
+        // Convert speed from km/h to radians per second based on wheel radius (0.4m)
+        // Circumference = 2πr = 2π * 0.4 = 2.51m
+        // At 1 km/h = 0.28 m/s, a wheel completes 0.28/2.51 = 0.11 rotations per second
+        // One rotation = 2π radians, so that's 0.11 * 2π = 0.69 radians per second at 1 km/h
+        const wheelCircumference = 2 * Math.PI * 0.4; // meters
+        const speedMetersPerSecond = Math.abs(this.speed) * (1000 / 3600); // Convert km/h to m/s
+        const rotationsPerSecond = speedMetersPerSecond / wheelCircumference; 
+        const radiansPerSecond = rotationsPerSecond * 2 * Math.PI;
+        
+        // Apply rotation in the correct direction based on car's movement
+        const rotationDirection = this.speed >= 0 ? 1 : -1;
+        const wheelRotationAmount = radiansPerSecond * rotationDirection * dt;
+        
+        // Apply rotation to each wheel
+        for (let i = 0; i < this.wheelMeshes.length; i++) {
+            // For the x-axis rotation (forward/backward rolling), apply to all wheels
+            this.wheelMeshes[i].rotation.x += wheelRotationAmount;
+        }
         
         // Update bounding box for collision detection
         this.boundingBox.setFromObject(this.mesh);
