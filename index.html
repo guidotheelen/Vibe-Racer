@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe-Racer - 3D Racing Game</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="loading-screen">
+            <div class="loading-content">
+                <h1>VIBE-RACER</h1>
+                <div class="loader"></div>
+                <p>Loading...</p>
+            </div>
+        </div>
+        <div id="game-ui">
+            <div id="speedometer">
+                <span id="speed">0</span> <span class="unit">KM/H</span>
+            </div>
+            <div id="lap-info">
+                <div id="lap-counter">LAP: <span id="current-lap">1</span>/<span id="total-laps">3</span></div>
+                <div id="lap-time">TIME: <span id="time">00:00.000</span></div>
+                <div id="best-lap">BEST: <span id="best-time">--:--:---</span></div>
+            </div>
+        </div>
+        <div id="start-screen">
+            <div class="start-content">
+                <h1>VIBE-RACER</h1>
+                <p>Control your car with arrow keys or WASD</p>
+                <button id="start-button">START RACE</button>
+            </div>
+        </div>
+        <div id="game-over-screen" class="hidden">
+            <div class="game-over-content">
+                <h1>RACE COMPLETE!</h1>
+                <div id="final-time">TOTAL TIME: <span id="total-time">00:00.000</span></div>
+                <div id="best-lap-final">BEST LAP: <span id="best-lap-time">00:00.000</span></div>
+                <button id="restart-button">RACE AGAIN</button>
+            </div>
+        </div>
+        <canvas id="game-canvas"></canvas>
+    </div>
+    
+    <!-- Three.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    
+    <!-- Game scripts -->
+    <script src="./js/utils.js"></script>
+    <script src="./js/car.js"></script>
+    <script src="./js/track.js"></script>
+    <script src="./js/game.js"></script>
+    <script src="./js/main.js"></script>
+</body>
+</html>
