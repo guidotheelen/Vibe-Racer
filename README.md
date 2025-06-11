@@ -42,7 +42,16 @@ This project uses:
 - Vanilla JavaScript for game logic
 - HTML/CSS for UI
 
+## Model Context Protocol (MCP)
+
+This project is compatible with the [Model Context Protocol (MCP)](https://github.com/modelcontext/protocol). MCP enables advanced AI and automation workflows by providing structured context about the project, such as code, assets, and documentation. This allows tools and agents to:
+
+- Analyze and understand the project structure
+- Automate code reviews and documentation
+- Integrate with AI-powered development tools
+
+No additional setup is required for MCP compatibility. The project structure and documentation follow MCP best practices.
+
 ## License
 
 MIT
-# Vibe-Racer
